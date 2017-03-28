@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -5,7 +7,11 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// define route handlers
 var index = require('./routes/index');
+var books = require('./routes/books');
+//var patrons = require('./routes/patrons');
+//var loans = require('./routes/loans');
 
 var app = express();
 
@@ -23,7 +29,11 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// assign route handlers
 app.use('/', index);
+app.use('/books', books);
+//app.use('/patrons', patrons);
+//app.use('/loans', loans);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

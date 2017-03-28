@@ -1,0 +1,57 @@
+extends ../layout
+
+block content
+    h1 Book: #{book.title}
+    form(method='POST', action='./' + book.id)
+        if errors
+            h2.error Oooops!
+            ul.error
+                each error in errors
+                    li #{error.message}
+        p
+            label(for='title') Title
+            |
+            input#title(type='text', name='title', value=book.title)
+        p 
+            label(for='author') Author
+            |
+            input#author(type='text', name='author', value=book.author)
+        p
+            label(for='genre') Genre
+            |
+            input#genre(type='text', name='genre', value=book.genre)
+        p
+            label(for='first_published') First published
+            |
+            input#first_published(type='text', name='first_published',value=book.first_published)
+        p
+            input(type='submit', value='Update')
+    h2 Loan History
+    table
+        thead
+            tr
+                th Books
+                th Patron
+                th Loaned on
+                th Return by
+                th Returned on
+                th Action
+        tbody
+            if loans && loans.length > 0
+                each loan in loans
+                    tr
+                        td
+                            a(href='./' + loan.Book.id) #{loan.Book.title}
+                        td
+                            a(href='../patrons/' + loan.Patron.id) #{loan.Patron.first_name} #{loan.Patron.last_name}
+                        td #{loan.loaned_on}
+                        td #{loan.return_by}
+                        td #{loan.returned_on}
+                        td
+                            unless loan.returned_on
+                                a.button(href='../loans/return/' + loan.id) Return book
+                            else 
+                                | No actions available
+            else
+                tr
+                    td No loan records were found
