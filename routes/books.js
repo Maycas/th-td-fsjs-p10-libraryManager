@@ -3,13 +3,13 @@
 /**
  * API DESCRIPTION
  * 
- * /books                   - GET  | Lists all books
- * /books?filter=overdue    - GET  | Lists all books filtered by the ones that are overdue
- * /books?filter=checked    - GET  | Lists all books filtered by the ones that were checked out
- * /books/add               - GET  | Generate an empty form to add a new book
- * /books/add               - POST | Adds a new book entry
- * /book/:id                - GET  | Returns the results of a book
- * /book/:id                - POST | Updates a book entry
+ * /books                   - GET   | Lists all books
+ * /books?filter=overdue    - GET   | Lists all books filtered by the ones that are overdue
+ * /books?filter=checked    - GET   | Lists all books filtered by the ones that were checked out
+ * /books/add               - GET   | Generate an empty form to add a new book
+ * /books/add               - POST  | Adds a new book entry
+ * /book/:id                - GET   | Returns the results of a book
+ * /book/:id                - POST  | Updates a book entry
  */
 
 // Required app modules
@@ -20,6 +20,10 @@ var router = express.Router();
 var Book = require('../models').Book;
 var Patron = require('../models').Patron;
 var Loan = require('../models').Loan;
+
+// Moment.js library to handle Updates
+var moment = require('moment');
+
 
 /**
  * GET all books
@@ -36,54 +40,57 @@ router.get('/', function (req, res) {
             // GET params: filter=overdue
             title = 'Overdue Books';
             Loan.findAll({
-                include: [Book, Patron],
-                where: {
-                    return_by: {
-                        $lt: new Date() // return by date was time ago
-                    },
-                    returned_on: null // book not returned yet
-                }
-            }).then(function (loans) {
-                // Get the books for each found loan
-                var books = loans.map(function (loan) {
-                    return loan.Book;
+                    include: [Book, Patron],
+                    where: {
+                        return_by: {
+                            $lt: moment().format('YYYY-MM-DD') // return by date was time ago
+                        },
+                        returned_on: null // book not returned yet
+                    }
+                })
+                .then(function (loans) {
+                    // Get the books for each found loan
+                    var books = loans.map(function (loan) {
+                        return loan.Book;
+                    });
+                    res.render('books/books', {
+                        title: title,
+                        books: books
+                    });
                 });
-                res.render('books/books', {
-                    title: title,
-                    books: books
-                });
-            });
             break;
 
         case 'checked':
             // GET params: filter=checked
             title = 'Checked Out Books';
             Loan.findAll({
-                include: [Book, Patron],
-                where: {
-                    returned_on: null // book not returned yet
-                }
-            }).then(function (loans) {
-                // Get the books for each found loan
-                var books = loans.map(function (loan) {
-                    return loan.Book;
+                    include: [Book, Patron],
+                    where: {
+                        returned_on: null // book not returned yet
+                    }
+                })
+                .then(function (loans) {
+                    // Get the books for each found loan
+                    var books = loans.map(function (loan) {
+                        return loan.Book;
+                    });
+                    res.render('books/books', {
+                        title: title,
+                        books: books
+                    });
                 });
-                res.render('books/books', {
-                    title: title,
-                    books: books
-                });
-            });
             break;
 
         default:
             // No GET params applied
             title = 'Books';
-            Book.findAll().then(function (books) {
-                res.render('books/books', {
-                    title: title,
-                    books: books
+            Book.findAll()
+                .then(function (books) {
+                    res.render('books/books', {
+                        title: title,
+                        books: books
+                    });
                 });
-            });
             break;
     }
 });
@@ -115,7 +122,7 @@ router.post('/add', function (req, res) {
             res.redirect('/books');
         })
         .catch(function (err) {
-            if (err.name === "SequelizeValidationError") {
+            if (err.name === 'SequelizeValidationError') {
                 res.render('books/books_addNew', {
                     title: "New Book",
                     book: Book.build(),
@@ -181,7 +188,7 @@ router.post('/:id', function (req, res) {
             res.redirect('/books');
         })
         .catch(function (err) {
-            if (err.name === "SequelizeValidationError") {
+            if (err.name === 'SequelizeValidationError') {
                 // In order to re-render the pages it is required to obtain all the loans for that specific book
                 Loan.findAll({
                         include: [Book, Patron],

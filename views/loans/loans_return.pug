@@ -1,0 +1,29 @@
+extends ../layout
+
+block content
+    h1 #{title}
+    p
+        strong Book Title: 
+        | #{loan.Book.title}
+    p
+        strong Loaned By: 
+        | #{loan.Patron.first_name} #{loan.Patron.last_name}
+    p
+        strong Loaned On: 
+        | #{loan.loaned_on}
+    p
+        strong Return By: 
+        | #{loan.return_by}
+    
+    form(method='POST', action='/loans/' + loan.id)
+        if errors
+            h2.error Oooops!
+            ul.error
+                each error in errors
+                    li #{error.message}
+        p
+            label(for='returned_on') Returned on:
+            input#returned_on(type='text', name='returned_on', value=loan.returned_on)
+        p
+            input(type='submit', value='Return Book')
+
