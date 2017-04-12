@@ -29,7 +29,7 @@ var moment = require('moment');
  * GET all loans
  * Route: /loans
  * 
- * Gets all the list of loans. It also allows filtering by loans that are overdue or checked out books.
+ * Renders all loans. It also allows filtering by loans that are overdue or checked out books.
  */
 router.get('/', function (req, res) {
     var title;
@@ -95,14 +95,11 @@ router.get('/', function (req, res) {
  * Loads a form to introduce a new loan entry
  */
 router.get('/add', function (req, res) {
-
     // Build a mock loan
     var loan = Loan.build({
         loaned_on: moment().format('YYYY-MM-DD'),
         return_by: moment().add(7, 'days').format('YYYY-MM-DD')
     });
-
-    console.log(loan.loaned_on);
 
     // Render the form for a new loan
     renderNewLoanForm(res, loan);

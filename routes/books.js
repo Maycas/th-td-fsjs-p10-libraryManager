@@ -29,7 +29,7 @@ var moment = require('moment');
  * GET all books
  * Route: /books
  * 
- * Gets all the list of books. It also allows filtering by books that are overdue or checked out books.
+ * Renders a list of books. It also allows filtering by books that are overdue or checked out books.
  */
 router.get('/', function (req, res) {
     var title;
