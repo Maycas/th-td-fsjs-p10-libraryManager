@@ -17,7 +17,7 @@ block content
             label(for='patron_id') Patron
             select#patron_id(name='patron_id')
                 each patron in patrons
-                    option(value=patron.id, selected=(patron.id === loan.patron_id)) #{patron.first_name} #{patron.last_name}
+                    option(value=patron.id, selected=(patron.id === loan.patron_id)) #{patron.name()}
         p
             label(for='loaned_on') Loaned on:
             input#loaned_on(type='text', name='loaned_on', value=loan.loaned_on)

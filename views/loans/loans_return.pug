@@ -7,7 +7,7 @@ block content
         | #{loan.Book.title}
     p
         strong Loaned By: 
-        | #{loan.Patron.first_name} #{loan.Patron.last_name}
+        | #{loan.Patron.name()}
     p
         strong Loaned On: 
         | #{loan.loaned_on}

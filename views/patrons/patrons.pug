@@ -18,7 +18,7 @@ block content
                     each patron in patrons
                         tr
                             td
-                                a(href='/patrons/' + patron.id) #{patron.first_name} #{patron.last_name}
+                                a(href='/patrons/' + patron.id) #{patron.name()}
                             td #{patron.address}
                             td #{patron.email}
                             td #{patron.library_id}
