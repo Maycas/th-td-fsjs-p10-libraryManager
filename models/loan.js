@@ -32,7 +32,9 @@ module.exports = function (sequelize, DataTypes) {
         isDate: {
           msg: 'Loaned On date invalid format. Accepted format: YYYY-MM-DD (e.g., 2016-03-15)'
         },
-        isValidDateFormat: isValidDateFormat
+        isValidDateFormat: function (value) {
+          this['$modelOptions'].classMethods.isValidDateFormat(value);
+        }
       }
     },
     return_by: {
@@ -44,7 +46,9 @@ module.exports = function (sequelize, DataTypes) {
         isDate: {
           msg: 'Return by date invalid format. Accepted format: YYYY-MM-DD (e.g., 2016-03-15)'
         },
-        isValidDateFormat: isValidDateFormat
+        isValidDateFormat: function (value) {
+          this['$modelOptions'].classMethods.isValidDateFormat(value);
+        }
       }
     },
     returned_on: {
@@ -56,7 +60,9 @@ module.exports = function (sequelize, DataTypes) {
         isDate: {
           msg: 'Returned On is not a date'
         },
-        isValidDateFormat: isValidDateFormat
+        isValidDateFormat: function (value) {
+          this['$modelOptions'].classMethods.isValidDateFormat(value);
+        }
       }
     }
   }, {
@@ -70,21 +76,15 @@ module.exports = function (sequelize, DataTypes) {
         this.belongsTo(models.Patron, {
           foreignKey: 'patron_id'
         });
+      },
+      isValidDateFormat: function (value) {
+        // Validates if an introduced date is of format 'YYYY-MM-DD'
+        if (!moment(value, 'YYYY-MM-DD', true).isValid()) {
+          throw new Error('Returned On date invalid format. Accepted format: YYYY-MM-DD (e.g., 2016-03-15)');
+        }
       }
     },
     timestamps: false
   });
   return Loan;
 };
-
-/**
- * @name isValidDateFormat
- * @description Validates if an introduced date is of format 'YYYY-MM-DD'
- * 
- * @param {String} value  - Date to check
- */
-function isValidDateFormat(value) {
-  if (!moment(value, 'YYYY-MM-DD', true).isValid()) {
-    throw new Error('Returned On date invalid format. Accepted format: YYYY-MM-DD (e.g., 2016-03-15)');
-  }
-}
