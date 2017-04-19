@@ -17,13 +17,13 @@ var Tools = {
         }
     },
     pagination: {
-        resultsLimit: 1,
-        getPaginationLinks: function (resultCount, filter) {
+        resultsLimit: 5,
+        getPaginationLinks: function (resultCount, filter, search) {
             var links = [];
             var pages = Math.ceil(resultCount / this.resultsLimit);
 
             for (var i = 1; i <= pages; i++) {
-                var link = this.buildLink(filter, i);
+                var link = this.buildLink(filter, search, i);
                 links.push({
                     num: i,
                     href: link
@@ -32,11 +32,15 @@ var Tools = {
 
             return links;
         },
-        buildLink: function (filter, page) {
+        buildLink: function (filter, search, page) {
             var link = '?';
 
             if (filter) {
                 link += 'filter=' + filter;
+            }
+
+            if (search) {
+                link += '&search=' + search;
             }
 
             if (page) {

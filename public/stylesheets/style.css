@@ -122,3 +122,7 @@ input[type=text], select {
 .pagination {
   border-bottom: none;
 }
+
+#search {
+  margin: 0;
+}

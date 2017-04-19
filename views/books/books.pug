@@ -4,6 +4,9 @@ block content
     h1 #{title}
     p
         a.button(href='/books/add') Create new book
+    p
+        form(method='GET', action='/books')
+            input#search(type='text', name='search', placeholder='Search by title or author')
     p Filters   
         a(href='/books') All 
         |  |  

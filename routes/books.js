@@ -35,13 +35,18 @@ router.get('/', function (req, res) {
     var title; // Page title
     var filter = req.query.filter; // GET parameter 'filter' in the query URL
     var page = req.query.page; // GET parameter 'page' in the query URL
+    var search = req.query.search; // GET parameter 'search in the query URL
 
-    // Add a first page in case it didn't exist in the request
+    // Add a first page in case it didn't exist in the request as a parameter
     if (!page) {
         page = 1;
     }
-
     var offset = (page - 1) * tools.pagination.resultsLimit; // Offset calculation
+
+    // Set a blank search string in case it didn't exist in the request as a parameter
+    if (!search) {
+        search = '';
+    }
 
     switch (filter) {
         case 'overdue':
@@ -66,7 +71,7 @@ router.get('/', function (req, res) {
                     res.render('books/books', {
                         title: title,
                         books: books,
-                        links: tools.pagination.getPaginationLinks(loans.count, filter)
+                        links: tools.pagination.getPaginationLinks(loans.count, filter, search)
                     });
                 });
             break;
@@ -90,7 +95,7 @@ router.get('/', function (req, res) {
                     res.render('books/books', {
                         title: title,
                         books: books,
-                        links: tools.pagination.getPaginationLinks(loans.count, filter)
+                        links: tools.pagination.getPaginationLinks(loans.count, filter, search)
                     });
                 });
             break;
@@ -101,12 +106,23 @@ router.get('/', function (req, res) {
             Book.findAndCountAll({
                     limit: tools.pagination.resultsLimit,
                     offset: offset,
+                    where: {
+                        $or: [{
+                            title: {
+                                like: '%' + search + '%'
+                            }
+                        }, {
+                            author: {
+                                like: '%' + search + '%'
+                            }
+                        }]
+                    }
                 })
                 .then(function (books) {
                     res.render('books/books', {
                         title: title,
                         books: books.rows,
-                        links: tools.pagination.getPaginationLinks(books.count)
+                        links: tools.pagination.getPaginationLinks(books.count, filter, search)
                     });
                 });
             break;
