@@ -27,11 +27,39 @@ var Loan = require('../models').Loan;
  * Renders all patrons
  */
 router.get('/', function (req, res) {
-    Patron.findAll()
+    var search = req.query.search; // GET parameter 'search in the query URL
+
+    // Set a blank search string in case it didn't exist in the request as a parameter
+    if (!search) {
+        search = '';
+    }
+
+    Patron.findAll({
+            where: {
+                $or: [{
+                    first_name: {
+                        like: '%' + search + '%'
+                    }
+                }, {
+                    last_name: {
+                        like: '%' + search + '%'
+                    }
+                }, {
+                    library_id: {
+                        like: '%' + search + '%'
+                    }
+                }, {
+                    email: {
+                        like: '%' + search + '%'
+                    }
+                }]
+            }
+        })
         .then(function (patrons) {
             res.render('patrons/patrons', {
                 title: 'Patrons',
-                patrons: patrons
+                patrons: patrons,
+                search: search
             });
         });
 });

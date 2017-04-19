@@ -60,7 +60,7 @@ router.get('/', function (req, res) {
                         return_by: {
                             $lt: moment().format('YYYY-MM-DD') // return by date was time ago
                         },
-                        returned_on: null // book not returned yet
+                        returned_on: null, // book not returned yet
                     }
                 })
                 .then(function (loans) {
@@ -71,7 +71,7 @@ router.get('/', function (req, res) {
                     res.render('books/books', {
                         title: title,
                         books: books,
-                        links: tools.pagination.getPaginationLinks(loans.count, filter, search)
+                        links: tools.pagination.getPaginationLinks(loans.count, filter)
                     });
                 });
             break;
@@ -84,7 +84,7 @@ router.get('/', function (req, res) {
                     limit: tools.pagination.resultsLimit,
                     offset: offset,
                     where: {
-                        returned_on: null // book not returned yet
+                        returned_on: null, // book not returned yet
                     }
                 })
                 .then(function (loans) {
@@ -95,7 +95,7 @@ router.get('/', function (req, res) {
                     res.render('books/books', {
                         title: title,
                         books: books,
-                        links: tools.pagination.getPaginationLinks(loans.count, filter, search)
+                        links: tools.pagination.getPaginationLinks(loans.count, filter)
                     });
                 });
             break;
@@ -115,6 +115,10 @@ router.get('/', function (req, res) {
                             author: {
                                 like: '%' + search + '%'
                             }
+                        }, {
+                            genre: {
+                                like: '%' + search + '%'
+                            }
                         }]
                     }
                 })
@@ -122,7 +126,8 @@ router.get('/', function (req, res) {
                     res.render('books/books', {
                         title: title,
                         books: books.rows,
-                        links: tools.pagination.getPaginationLinks(books.count, filter, search)
+                        links: tools.pagination.getPaginationLinks(books.count, filter, search),
+                        search: search
                     });
                 });
             break;

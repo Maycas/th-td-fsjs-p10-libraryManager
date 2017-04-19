@@ -4,6 +4,9 @@ block content
     h1 #{title}
     p
         a.button(href='/patrons/add') Create New Patron
+    p
+        form(method='GET', action='/patrons')
+            input#search(type='text', name='search', value=search, placeholder='Search by first name, last name, library ID or email')
     table
         thead
             tr

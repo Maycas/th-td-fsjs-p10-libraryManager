@@ -125,4 +125,5 @@ input[type=text], select {
 
 #search {
   margin: 0;
+  width: 40%;
 }

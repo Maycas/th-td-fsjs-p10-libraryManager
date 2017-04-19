@@ -6,7 +6,7 @@ block content
         a.button(href='/books/add') Create new book
     p
         form(method='GET', action='/books')
-            input#search(type='text', name='search', placeholder='Search by title or author')
+            input#search(type='text', name='search', value=search, placeholder='Search by title, author or genre')
     p Filters   
         a(href='/books') All 
         |  |  
