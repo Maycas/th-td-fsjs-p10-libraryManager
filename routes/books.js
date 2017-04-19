@@ -21,9 +21,9 @@ var Book = require('../models').Book;
 var Patron = require('../models').Patron;
 var Loan = require('../models').Loan;
 
-// Moment.js library to handle Updates
+// Other libraries used
 var moment = require('moment');
-
+var tools = require('../utilities/tools');
 
 /**
  * GET all books
@@ -32,15 +32,25 @@ var moment = require('moment');
  * Renders a list of books. It also allows filtering by books that are overdue or checked out books.
  */
 router.get('/', function (req, res) {
-    var title;
+    var title; // Page title
     var filter = req.query.filter; // GET parameter 'filter' in the query URL
+    var page = req.query.page; // GET parameter 'page' in the query URL
+
+    // Add a first page in case it didn't exist in the request
+    if (!page) {
+        page = 1;
+    }
+
+    var offset = (page - 1) * tools.pagination.resultsLimit; // Offset calculation
 
     switch (filter) {
         case 'overdue':
             // GET params: filter=overdue
             title = 'Overdue Books';
-            Loan.findAll({
+            Loan.findAndCountAll({
                     include: [Book, Patron],
+                    limit: tools.pagination.resultsLimit,
+                    offset: offset,
                     where: {
                         return_by: {
                             $lt: moment().format('YYYY-MM-DD') // return by date was time ago
@@ -50,12 +60,13 @@ router.get('/', function (req, res) {
                 })
                 .then(function (loans) {
                     // Get the books for each found loan
-                    var books = loans.map(function (loan) {
+                    var books = loans.rows.map(function (loan) {
                         return loan.Book;
                     });
                     res.render('books/books', {
                         title: title,
-                        books: books
+                        books: books,
+                        links: tools.pagination.getPaginationLinks(loans.count, filter)
                     });
                 });
             break;
@@ -63,20 +74,23 @@ router.get('/', function (req, res) {
         case 'checked':
             // GET params: filter=checked
             title = 'Checked Out Books';
-            Loan.findAll({
+            Loan.findAndCountAll({
                     include: [Book, Patron],
+                    limit: tools.pagination.resultsLimit,
+                    offset: offset,
                     where: {
                         returned_on: null // book not returned yet
                     }
                 })
                 .then(function (loans) {
                     // Get the books for each found loan
-                    var books = loans.map(function (loan) {
+                    var books = loans.rows.map(function (loan) {
                         return loan.Book;
                     });
                     res.render('books/books', {
                         title: title,
-                        books: books
+                        books: books,
+                        links: tools.pagination.getPaginationLinks(loans.count, filter)
                     });
                 });
             break;
@@ -84,11 +98,15 @@ router.get('/', function (req, res) {
         default:
             // No GET params applied
             title = 'Books';
-            Book.findAll()
+            Book.findAndCountAll({
+                    limit: tools.pagination.resultsLimit,
+                    offset: offset,
+                })
                 .then(function (books) {
                     res.render('books/books', {
                         title: title,
-                        books: books
+                        books: books.rows,
+                        links: tools.pagination.getPaginationLinks(books.count)
                     });
                 });
             break;

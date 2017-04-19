@@ -118,3 +118,7 @@ input[type=text], select {
 .error {
   color: #dd0000;
 }
+
+.pagination {
+  border-bottom: none;
+}

@@ -1,5 +1,6 @@
 'use strict';
-var moment = require('moment');
+
+var isValidDateFormat = require('../utilities/tools').validations.isValidDateFormat;
 
 module.exports = function (sequelize, DataTypes) {
   var Loan = sequelize.define('Loan', {
@@ -32,9 +33,7 @@ module.exports = function (sequelize, DataTypes) {
         isDate: {
           msg: 'Loaned On date invalid format. Accepted format: YYYY-MM-DD (e.g., 2016-03-15)'
         },
-        isValidDateFormat: function (value) {
-          this['$modelOptions'].classMethods.isValidDateFormat(value);
-        }
+        isValidDateFormat: isValidDateFormat
       }
     },
     return_by: {
@@ -46,9 +45,7 @@ module.exports = function (sequelize, DataTypes) {
         isDate: {
           msg: 'Return by date invalid format. Accepted format: YYYY-MM-DD (e.g., 2016-03-15)'
         },
-        isValidDateFormat: function (value) {
-          this['$modelOptions'].classMethods.isValidDateFormat(value);
-        }
+        isValidDateFormat: isValidDateFormat
       }
     },
     returned_on: {
@@ -60,9 +57,7 @@ module.exports = function (sequelize, DataTypes) {
         isDate: {
           msg: 'Returned On is not a date'
         },
-        isValidDateFormat: function (value) {
-          this['$modelOptions'].classMethods.isValidDateFormat(value);
-        }
+        isValidDateFormat: isValidDateFormat
       }
     }
   }, {
@@ -77,12 +72,6 @@ module.exports = function (sequelize, DataTypes) {
           foreignKey: 'patron_id'
         });
       },
-      isValidDateFormat: function (value) {
-        // Validates if an introduced date is of format 'YYYY-MM-DD'
-        if (!moment(value, 'YYYY-MM-DD', true).isValid()) {
-          throw new Error('Returned On date invalid format. Accepted format: YYYY-MM-DD (e.g., 2016-03-15)');
-        }
-      }
     },
     timestamps: false
   });

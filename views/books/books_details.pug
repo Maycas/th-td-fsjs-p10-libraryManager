@@ -49,7 +49,7 @@ block content
                         td #{loan.returned_on}
                         td
                             unless loan.returned_on
-                                a.button(href='../loans/return/' + loan.id) Return book
+                                a.button(href='../loans/' + loan.id) Return book
                             else 
                                 | No actions available
             else
