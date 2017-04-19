@@ -17,7 +17,7 @@ var Tools = {
         }
     },
     pagination: {
-        resultsLimit: 5,
+        resultsLimit: 1,
         getPaginationLinks: function (resultCount, filter) {
             var links = [];
             var pages = Math.ceil(resultCount / this.resultsLimit);

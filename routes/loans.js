@@ -21,8 +21,9 @@ var Book = require('../models').Book;
 var Patron = require('../models').Patron;
 var Loan = require('../models').Loan;
 
-// Moment.js library to handle Updates
+// Other libraries used
 var moment = require('moment');
+var tools = require('../utilities/tools');
 
 
 /**
@@ -34,13 +35,23 @@ var moment = require('moment');
 router.get('/', function (req, res) {
     var title;
     var filter = req.query.filter; // GET parameter 'filter' in the query URL
+    var page = req.query.page; // GET parameter 'page' in the query URL
+
+    // Add a first page in case it didn't exist in the request
+    if (!page) {
+        page = 1;
+    }
+
+    var offset = (page - 1) * tools.pagination.resultsLimit; // Offset calculation
 
     switch (filter) {
         case 'overdue':
             // GET params: filter=overdue
             title = 'Overdue Loans';
-            Loan.findAll({
+            Loan.findAndCountAll({
                     include: [Book, Patron],
+                    limit: tools.pagination.resultsLimit,
+                    offset: offset,
                     where: {
                         return_by: {
                             $lt: moment().format('YYYY-MM-DD') // return by date was time ago
@@ -51,15 +62,18 @@ router.get('/', function (req, res) {
                 .then(function (loans) {
                     res.render('loans/loans', {
                         title: title,
-                        loans: loans
+                        loans: loans.rows,
+                        links: tools.pagination.getPaginationLinks(loans.count, filter)
                     });
                 });
             break;
         case 'checked':
             // GET params: filter=checked
             title = 'Checked Out Loans';
-            Loan.findAll({
+            Loan.findAndCountAll({
                     include: [Book, Patron],
+                    limit: tools.pagination.resultsLimit,
+                    offset: offset,
                     where: {
                         returned_on: null //book not returned yet
                     }
@@ -67,22 +81,26 @@ router.get('/', function (req, res) {
                 .then(function (loans) {
                     res.render('loans/loans', {
                         title: title,
-                        loans: loans
-                    })
+                        loans: loans.rows,
+                        links: tools.pagination.getPaginationLinks(loans.count, filter)
+                    });
                 });
             break;
         default:
             // No GET params
             title = 'Loans';
-            Loan.findAll({
-                    include: [Book, Patron]
+            Loan.findAndCountAll({
+                    include: [Book, Patron],
+                    limit: tools.pagination.resultsLimit,
+                    offset: offset,
                 })
                 .then(function (loans) {
                     res.render('loans/loans', {
                         title: title,
-                        loans: loans
+                        loans: loans.rows,
+                        links: tools.pagination.getPaginationLinks(loans.count)
                     });
-                })
+                });
             break;
     }
 });
