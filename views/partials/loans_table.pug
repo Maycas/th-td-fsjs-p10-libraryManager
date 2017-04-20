@@ -14,7 +14,7 @@ table
                     td
                         a(href='/books/' + loan.Book.id) #{loan.Book.title}
                     td
-                        a(href='/patron/' + loan.Patron.id) #{loan.Patron.name()}
+                        a(href='/patrons/' + loan.Patron.id) #{loan.Patron.name()}
                     td #{loan.loaned_on}
                     td #{loan.return_by}
                     td #{loan.returned_on}
